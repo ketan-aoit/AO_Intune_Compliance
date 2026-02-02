@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environment": {
+      "value": "dev"
+    },
+    "sqlAdminLogin": {
+      "value": "sqladmin"
+    },
+    "sqlAdminPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.KeyVault/vaults/{kv-name}"
+        },
+        "secretName": "SqlAdminPassword"
+      }
+    },
+    "azureAdTenantId": {
+      "value": "{tenant-id}"
+    },
+    "azureAdClientId": {
+      "value": "{portal-client-id}"
+    },
+    "graphApiClientId": {
+      "value": "{graph-api-client-id}"
+    },
+    "graphApiClientSecret": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.KeyVault/vaults/{kv-name}"
+        },
+        "secretName": "GraphApiClientSecret"
+      }
+    },
+    "senderEmail": {
+      "value": "noreply@yourdomain.com"
+    }
+  }
+}

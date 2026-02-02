@@ -1,0 +1,63 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'src/AOIntuneAlerts.Domain/**'
+      - 'src/AOIntuneAlerts.Application/**'
+      - 'src/AOIntuneAlerts.Infrastructure/**'
+      - 'src/AOIntuneAlerts.BackgroundJobs/**'
+      - 'src/AOIntuneAlerts.WebApi/**'
+      - 'tests/**'
+      - '*.sln'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'src/AOIntuneAlerts.Domain/**'
+      - 'src/AOIntuneAlerts.Application/**'
+      - 'src/AOIntuneAlerts.Infrastructure/**'
+      - 'src/AOIntuneAlerts.BackgroundJobs/**'
+      - 'src/AOIntuneAlerts.WebApi/**'
+      - 'tests/**'
+      - '*.sln'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        if: github.event_name == 'push'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./coverage
+          fail_ci_if_error: false
+
+      - name: Publish API
+        run: dotnet publish src/AOIntuneAlerts.WebApi/AOIntuneAlerts.WebApi.csproj --configuration Release --output ./publish
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-package
+          path: ./publish
+          retention-days: 7

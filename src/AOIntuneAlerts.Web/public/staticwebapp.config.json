@@ -1,0 +1,17 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/assets/*", "*.css", "*.js", "*.png", "*.jpg", "*.svg", "*.ico"]
+  },
+  "routes": [
+    {
+      "route": "/auth/*",
+      "rewrite": "/index.html"
+    }
+  ],
+  "globalHeaders": {
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://login.microsoftonline.com https://aadcdn.msftauth.net; style-src 'self' 'unsafe-inline' https://aadcdn.msftauth.net; img-src 'self' data: https:; connect-src 'self' https://login.microsoftonline.com https://*.azurewebsites.net https://graph.microsoft.com; frame-src https://login.microsoftonline.com;"
+  }
+}
