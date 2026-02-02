@@ -7,6 +7,17 @@ export interface PaginatedList<T> {
   hasNextPage: boolean;
 }
 
+// Compliance states from Intune
+export type ComplianceState =
+  | 'Unknown'
+  | 'Compliant'
+  | 'NonCompliant'
+  | 'ApproachingEndOfSupport'
+  | 'InGracePeriod'
+  | 'ConfigManager'
+  | 'Conflict'
+  | 'Error';
+
 export interface DeviceDto {
   id: string;
   intuneDeviceId: string;
@@ -16,7 +27,8 @@ export interface DeviceDto {
   deviceType: string;
   operatingSystem: string;
   osVersion: string;
-  complianceState: string;
+  complianceState: ComplianceState;
+  intuneComplianceState: ComplianceState;
   lastSyncDateTime: string | null;
   lastComplianceEvaluationDate: string | null;
   endOfSupportDate: string | null;
@@ -26,7 +38,6 @@ export interface DeviceDto {
 
 export interface DeviceDetailDto extends DeviceDto {
   osEdition: string | null;
-  intuneComplianceState: string;
   isManaged: boolean;
   serialNumber: string | null;
   model: string | null;

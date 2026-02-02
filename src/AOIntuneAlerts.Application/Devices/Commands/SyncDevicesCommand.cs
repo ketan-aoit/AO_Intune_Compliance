@@ -129,10 +129,16 @@ public class SyncDevicesCommandHandler : IRequestHandler<SyncDevicesCommand, Res
         if (string.IsNullOrEmpty(complianceState))
             return ComplianceState.Unknown;
 
+        // Handle all Intune compliance states (case-insensitive)
         return complianceState.ToLowerInvariant() switch
         {
             "compliant" => ComplianceState.Compliant,
             "noncompliant" or "notcompliant" => ComplianceState.NonCompliant,
+            "ingraceperiod" or "in_grace_period" => ComplianceState.InGracePeriod,
+            "configmanager" or "config_manager" => ComplianceState.ConfigManager,
+            "conflict" => ComplianceState.Conflict,
+            "error" => ComplianceState.Error,
+            "unknown" => ComplianceState.Unknown,
             _ => ComplianceState.Unknown
         };
     }

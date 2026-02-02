@@ -26,13 +26,14 @@ const mockDashboard = {
 
 const mockDevices = {
   items: [
-    { id: '1', intuneDeviceId: 'intune-1', deviceName: 'DESKTOP-ABC123', userPrincipalName: 'john.smith@company.com', userDisplayName: 'John Smith', deviceType: 'Desktop', operatingSystem: 'Windows', osVersion: '10.0.19045', complianceState: 'NonCompliant', lastSyncDateTime: '2026-02-01T15:30:00Z', lastComplianceEvaluationDate: '2026-02-02T02:00:00Z', endOfSupportDate: '2026-03-15', isEncrypted: true, complianceIssueCount: 3 },
-    { id: '2', intuneDeviceId: 'intune-2', deviceName: 'LAPTOP-XYZ789', userPrincipalName: 'jane.doe@company.com', userDisplayName: 'Jane Doe', deviceType: 'Laptop', operatingSystem: 'Windows', osVersion: '11.0.22631', complianceState: 'Compliant', lastSyncDateTime: '2026-02-02T10:00:00Z', lastComplianceEvaluationDate: '2026-02-02T02:00:00Z', endOfSupportDate: null, isEncrypted: true, complianceIssueCount: 0 },
-    { id: '3', intuneDeviceId: 'intune-3', deviceName: 'MACBOOK-PRO-001', userPrincipalName: 'bob.wilson@company.com', userDisplayName: 'Bob Wilson', deviceType: 'Laptop', operatingSystem: 'macOS', osVersion: '14.2.1', complianceState: 'Compliant', lastSyncDateTime: '2026-02-02T09:00:00Z', lastComplianceEvaluationDate: '2026-02-02T02:00:00Z', endOfSupportDate: null, isEncrypted: true, complianceIssueCount: 0 },
+    { id: '1', intuneDeviceId: 'intune-1', deviceName: 'DESKTOP-ABC123', userPrincipalName: 'john.smith@company.com', userDisplayName: 'John Smith', deviceType: 'Desktop', operatingSystem: 'Windows', osVersion: '10.0.19045', complianceState: 'NonCompliant', intuneComplianceState: 'Noncompliant', lastSyncDateTime: '2026-02-01T15:30:00Z', lastComplianceEvaluationDate: '2026-02-02T02:00:00Z', endOfSupportDate: '2026-03-15', isEncrypted: true, complianceIssueCount: 3 },
+    { id: '2', intuneDeviceId: 'intune-2', deviceName: 'LAPTOP-XYZ789', userPrincipalName: 'jane.doe@company.com', userDisplayName: 'Jane Doe', deviceType: 'Laptop', operatingSystem: 'Windows', osVersion: '11.0.22631', complianceState: 'Compliant', intuneComplianceState: 'Compliant', lastSyncDateTime: '2026-02-02T10:00:00Z', lastComplianceEvaluationDate: '2026-02-02T02:00:00Z', endOfSupportDate: null, isEncrypted: true, complianceIssueCount: 0 },
+    { id: '3', intuneDeviceId: 'intune-3', deviceName: 'MACBOOK-PRO-001', userPrincipalName: 'bob.wilson@company.com', userDisplayName: 'Bob Wilson', deviceType: 'Laptop', operatingSystem: 'macOS', osVersion: '14.2.1', complianceState: 'Compliant', intuneComplianceState: 'Compliant', lastSyncDateTime: '2026-02-02T09:00:00Z', lastComplianceEvaluationDate: '2026-02-02T02:00:00Z', endOfSupportDate: null, isEncrypted: true, complianceIssueCount: 0 },
+    { id: '4', intuneDeviceId: 'intune-4', deviceName: 'DESKTOP-DEF456', userPrincipalName: 'alice.johnson@company.com', userDisplayName: 'Alice Johnson', deviceType: 'Desktop', operatingSystem: 'Windows', osVersion: '10.0.19044', complianceState: 'InGracePeriod', intuneComplianceState: 'InGracePeriod', lastSyncDateTime: '2026-02-02T08:00:00Z', lastComplianceEvaluationDate: null, endOfSupportDate: '2026-04-01', isEncrypted: true, complianceIssueCount: 1 },
   ],
   pageNumber: 1,
   totalPages: 1,
-  totalCount: 3,
+  totalCount: 4,
   hasPreviousPage: false,
   hasNextPage: false,
 };

@@ -28,6 +28,7 @@ public record DeviceDto
     public string OperatingSystem { get; init; } = string.Empty;
     public string OsVersion { get; init; } = string.Empty;
     public string ComplianceState { get; init; } = string.Empty;
+    public string IntuneComplianceState { get; init; } = string.Empty;
     public DateTime? LastSyncDateTime { get; init; }
     public DateTime? LastComplianceEvaluationDate { get; init; }
     public DateTime? EndOfSupportDate { get; init; }
@@ -101,7 +102,11 @@ public class GetDevicesQueryHandler : IRequestHandler<GetDevicesQuery, Paginated
             DeviceType = d.DeviceType.ToString(),
             OperatingSystem = d.OperatingSystem.Name,
             OsVersion = d.OperatingSystem.Version.Major + "." + d.OperatingSystem.Version.Minor + "." + d.OperatingSystem.Version.Patch,
-            ComplianceState = d.ComplianceState.ToString(),
+            // Use internal compliance state if evaluated, otherwise fall back to Intune's state
+            ComplianceState = d.LastComplianceEvaluationDate.HasValue
+                ? d.ComplianceState.ToString()
+                : d.IntuneComplianceState.ToString(),
+            IntuneComplianceState = d.IntuneComplianceState.ToString(),
             LastSyncDateTime = d.LastSyncDateTime,
             LastComplianceEvaluationDate = d.LastComplianceEvaluationDate,
             EndOfSupportDate = d.EndOfSupportDate,

@@ -223,16 +223,30 @@ function DetailRow({ label, value }: { label: string; value: string }) {
 }
 
 function ComplianceBadge({ state }: { state: string }) {
-  const color =
-    state === 'Compliant'
-      ? 'success'
-      : state === 'NonCompliant'
-      ? 'danger'
-      : state === 'ApproachingEndOfSupport'
-      ? 'warning'
-      : 'informative';
+  const getColorAndLabel = (): { color: 'success' | 'danger' | 'warning' | 'informative' | 'severe' | 'subtle' | 'important' | 'brand', label: string } => {
+    switch (state) {
+      case 'Compliant':
+        return { color: 'success', label: 'Compliant' };
+      case 'NonCompliant':
+        return { color: 'danger', label: 'Non-Compliant' };
+      case 'ApproachingEndOfSupport':
+        return { color: 'warning', label: 'Approaching EOS' };
+      case 'InGracePeriod':
+        return { color: 'warning', label: 'In Grace Period' };
+      case 'ConfigManager':
+        return { color: 'informative', label: 'Config Manager' };
+      case 'Conflict':
+        return { color: 'severe', label: 'Conflict' };
+      case 'Error':
+        return { color: 'danger', label: 'Error' };
+      case 'Unknown':
+      default:
+        return { color: 'subtle', label: state || 'Unknown' };
+    }
+  };
 
-  return <Badge appearance="filled" color={color} size="large">{state}</Badge>;
+  const { color, label } = getColorAndLabel();
+  return <Badge appearance="filled" color={color} size="large">{label}</Badge>;
 }
 
 function SeverityBadge({ severity }: { severity: string }) {

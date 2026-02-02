@@ -83,7 +83,10 @@ public class GetDeviceByIdQueryHandler : IRequestHandler<GetDeviceByIdQuery, Dev
             OperatingSystem = device.OperatingSystem.Name,
             OsVersion = device.OperatingSystem.Version.ToString(),
             OsEdition = device.OperatingSystem.Edition,
-            ComplianceState = device.ComplianceState.ToString(),
+            // Use internal compliance state if evaluated, otherwise fall back to Intune's state
+            ComplianceState = device.LastComplianceEvaluationDate.HasValue
+                ? device.ComplianceState.ToString()
+                : device.IntuneComplianceState.ToString(),
             IntuneComplianceState = device.IntuneComplianceState.ToString(),
             LastSyncDateTime = device.LastSyncDateTime,
             LastComplianceEvaluationDate = device.LastComplianceEvaluationDate,

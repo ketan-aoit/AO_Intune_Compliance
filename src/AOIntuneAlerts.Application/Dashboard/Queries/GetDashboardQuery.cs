@@ -68,11 +68,15 @@ public class GetDashboardQueryHandler : IRequestHandler<GetDashboardQuery, Dashb
             .Include(d => d.ComplianceIssues)
             .ToListAsync(cancellationToken);
 
+        // Use effective compliance state: internal if evaluated, otherwise Intune's state
+        ComplianceState GetEffectiveState(Domain.Aggregates.Device.Device d) =>
+            d.LastComplianceEvaluationDate.HasValue ? d.ComplianceState : d.IntuneComplianceState;
+
         var totalDevices = devices.Count;
-        var compliantDevices = devices.Count(d => d.ComplianceState == ComplianceState.Compliant);
-        var nonCompliantDevices = devices.Count(d => d.ComplianceState == ComplianceState.NonCompliant);
-        var approachingEosDevices = devices.Count(d => d.ComplianceState == ComplianceState.ApproachingEndOfSupport);
-        var unknownDevices = devices.Count(d => d.ComplianceState == ComplianceState.Unknown);
+        var compliantDevices = devices.Count(d => GetEffectiveState(d) == ComplianceState.Compliant);
+        var nonCompliantDevices = devices.Count(d => GetEffectiveState(d) == ComplianceState.NonCompliant);
+        var approachingEosDevices = devices.Count(d => GetEffectiveState(d) == ComplianceState.ApproachingEndOfSupport);
+        var unknownDevices = devices.Count(d => GetEffectiveState(d) == ComplianceState.Unknown);
 
         var compliancePercentage = totalDevices > 0
             ? Math.Round((double)compliantDevices / totalDevices * 100, 1)
@@ -94,8 +98,11 @@ public class GetDashboardQueryHandler : IRequestHandler<GetDashboardQuery, Dashb
 
         // Get devices at risk (non-compliant or approaching EOS)
         var devicesAtRisk = devices
-            .Where(d => d.ComplianceState == ComplianceState.NonCompliant ||
-                       d.ComplianceState == ComplianceState.ApproachingEndOfSupport)
+            .Where(d => GetEffectiveState(d) == ComplianceState.NonCompliant ||
+                       GetEffectiveState(d) == ComplianceState.ApproachingEndOfSupport ||
+                       GetEffectiveState(d) == ComplianceState.InGracePeriod ||
+                       GetEffectiveState(d) == ComplianceState.Error ||
+                       GetEffectiveState(d) == ComplianceState.Conflict)
             .OrderByDescending(d => d.ComplianceIssues.Count)
             .ThenBy(d => d.EndOfSupportDate)
             .Take(10)
@@ -104,7 +111,7 @@ public class GetDashboardQueryHandler : IRequestHandler<GetDashboardQuery, Dashb
                 Id = d.Id,
                 DeviceName = d.DeviceName,
                 UserDisplayName = d.UserDisplayName,
-                ComplianceState = d.ComplianceState.ToString(),
+                ComplianceState = GetEffectiveState(d).ToString(),
                 EndOfSupportDate = d.EndOfSupportDate,
                 IssueCount = d.ComplianceIssues.Count
             })
