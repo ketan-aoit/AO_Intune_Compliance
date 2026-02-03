@@ -66,7 +66,11 @@ public class GetDevicesQueryHandler : IRequestHandler<GetDevicesQuery, Paginated
 
         if (request.ComplianceState.HasValue)
         {
-            query = query.Where(d => d.ComplianceState == request.ComplianceState.Value);
+            // Filter by effective compliance state: internal if evaluated, otherwise Intune's state
+            query = query.Where(d =>
+                d.LastComplianceEvaluationDate.HasValue
+                    ? d.ComplianceState == request.ComplianceState.Value
+                    : d.IntuneComplianceState == request.ComplianceState.Value);
         }
 
         if (request.OperatingSystemType.HasValue)

@@ -17,7 +17,7 @@ import {
   Text,
   Badge,
 } from '@fluentui/react-components';
-import { Search20Regular, ArrowSync20Regular } from '@fluentui/react-icons';
+import { Search20Regular, ArrowSync20Regular, ArrowUp16Regular, ArrowDown16Regular } from '@fluentui/react-icons';
 import { useDevices, useSyncDevices, type GetDevicesParams } from '../api';
 import { useAuth } from '../auth';
 
@@ -48,6 +48,18 @@ const useStyles = makeStyles({
     alignItems: 'center',
     marginTop: tokens.spacingVerticalM,
   },
+  sortableHeader: {
+    cursor: 'pointer',
+    userSelect: 'none',
+    '&:hover': {
+      backgroundColor: tokens.colorNeutralBackground1Hover,
+    },
+  },
+  headerContent: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalXS,
+  },
 });
 
 const complianceStates = [
@@ -74,6 +86,11 @@ export function Devices() {
     complianceState: '',
   });
 
+  const [sortState, setSortState] = useState<{ sortBy: string | null; sortDescending: boolean }>({
+    sortBy: null,
+    sortDescending: false,
+  });
+
   const { data, isLoading, refetch } = useDevices(params);
   const syncMutation = useSyncDevices();
 
@@ -96,6 +113,33 @@ export function Devices() {
 
   const handlePageChange = (page: number) => {
     setParams((prev) => ({ ...prev, pageNumber: page }));
+  };
+
+  const handleSort = (column: string) => {
+    let newSortBy: string | null;
+    let newDescending: boolean;
+
+    if (sortState.sortBy !== column) {
+      // New column - sort ascending
+      newSortBy = column;
+      newDescending = false;
+    } else if (!sortState.sortDescending) {
+      // Same column, was ascending - sort descending
+      newSortBy = column;
+      newDescending = true;
+    } else {
+      // Same column, was descending - clear sort
+      newSortBy = null;
+      newDescending = false;
+    }
+
+    setSortState({ sortBy: newSortBy, sortDescending: newDescending });
+    setParams((prev) => ({
+      ...prev,
+      sortBy: newSortBy || undefined,
+      sortDescending: newDescending,
+      pageNumber: 1,
+    }));
   };
 
   return (
@@ -139,12 +183,52 @@ export function Devices() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHeaderCell>Device Name</TableHeaderCell>
-                <TableHeaderCell>User</TableHeaderCell>
+                <TableHeaderCell
+                  className={styles.sortableHeader}
+                  onClick={() => handleSort('name')}
+                >
+                  <div className={styles.headerContent}>
+                    Device Name
+                    {sortState.sortBy === 'name' && (
+                      sortState.sortDescending ? <ArrowDown16Regular /> : <ArrowUp16Regular />
+                    )}
+                  </div>
+                </TableHeaderCell>
+                <TableHeaderCell
+                  className={styles.sortableHeader}
+                  onClick={() => handleSort('user')}
+                >
+                  <div className={styles.headerContent}>
+                    User
+                    {sortState.sortBy === 'user' && (
+                      sortState.sortDescending ? <ArrowDown16Regular /> : <ArrowUp16Regular />
+                    )}
+                  </div>
+                </TableHeaderCell>
                 <TableHeaderCell>OS</TableHeaderCell>
-                <TableHeaderCell>Compliance</TableHeaderCell>
+                <TableHeaderCell
+                  className={styles.sortableHeader}
+                  onClick={() => handleSort('compliance')}
+                >
+                  <div className={styles.headerContent}>
+                    Compliance
+                    {sortState.sortBy === 'compliance' && (
+                      sortState.sortDescending ? <ArrowDown16Regular /> : <ArrowUp16Regular />
+                    )}
+                  </div>
+                </TableHeaderCell>
                 <TableHeaderCell>Issues</TableHeaderCell>
-                <TableHeaderCell>Last Sync</TableHeaderCell>
+                <TableHeaderCell
+                  className={styles.sortableHeader}
+                  onClick={() => handleSort('lastsync')}
+                >
+                  <div className={styles.headerContent}>
+                    Last Sync
+                    {sortState.sortBy === 'lastsync' && (
+                      sortState.sortDescending ? <ArrowDown16Regular /> : <ArrowUp16Regular />
+                    )}
+                  </div>
+                </TableHeaderCell>
               </TableRow>
             </TableHeader>
             <TableBody>
