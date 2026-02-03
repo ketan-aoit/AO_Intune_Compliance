@@ -45,7 +45,14 @@ public partial class SemVer : ValueObject, IComparable<SemVer>
         var minor = match.Groups["minor"].Success ? int.Parse(match.Groups["minor"].Value) : 0;
         var patch = match.Groups["patch"].Success ? int.Parse(match.Groups["patch"].Value) : 0;
         var preRelease = match.Groups["prerelease"].Success ? match.Groups["prerelease"].Value : null;
+
+        // Handle Windows-style versions (X.Y.Z.W) - store revision in Build property
         var build = match.Groups["build"].Success ? match.Groups["build"].Value : null;
+        if (match.Groups["revision"].Success)
+        {
+            // For Windows versions, the 4th part is the revision
+            build = match.Groups["revision"].Value;
+        }
 
         return new SemVer(major, minor, patch, preRelease, build);
     }
@@ -104,6 +111,8 @@ public partial class SemVer : ValueObject, IComparable<SemVer>
         return version;
     }
 
-    [GeneratedRegex(@"^(?<major>\d+)(\.(?<minor>\d+))?(\.(?<patch>\d+))?(-(?<prerelease>[0-9A-Za-z\-\.]+))?(\+(?<build>[0-9A-Za-z\-\.]+))?$")]
+    // Regex handles both SemVer (X.Y.Z) and Windows-style versions (X.Y.Z.W)
+    // For Windows versions like 10.0.22621.1234, we treat the third part as the build/patch
+    [GeneratedRegex(@"^(?<major>\d+)(\.(?<minor>\d+))?(\.(?<patch>\d+))?(\.(?<revision>\d+))?(-(?<prerelease>[0-9A-Za-z\-\.]+))?(\+(?<build>[0-9A-Za-z\-\.]+))?$")]
     private static partial Regex VersionRegex();
 }
