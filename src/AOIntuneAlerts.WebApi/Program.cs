@@ -5,6 +5,7 @@ using AOIntuneAlerts.Infrastructure;
 using AOIntuneAlerts.Infrastructure.Persistence;
 using AOIntuneAlerts.WebApi.Auth;
 using Hangfire;
+using Microsoft.EntityFrameworkCore;
 using Hangfire.Dashboard;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authentication;
@@ -173,6 +174,23 @@ builder.Services.AddHealthChecks()
     .AddDbContextCheck<ApplicationDbContext>();
 
 var app = builder.Build();
+
+// Apply pending migrations on startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    try
+    {
+        logger.LogInformation("Applying database migrations...");
+        db.Database.Migrate();
+        logger.LogInformation("Database migrations applied successfully.");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Error applying database migrations");
+    }
+}
 
 // Configure the HTTP request pipeline.
 // Enable swagger and developer exception page for debugging
